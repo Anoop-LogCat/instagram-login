@@ -1,10 +1,45 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
+declare var FB: any;
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
 })
-export class AppComponent {
-  title = 'angular-material-login-template';
+export class AppComponent implements OnInit {
+  accessToken: string = '';
+
+  ngOnInit(): void {
+    (window as any).fbAsyncInit = function () {
+      FB.init({
+        appId: '235806538444097',
+        cookie: true,
+        xfbml: true,
+        version: 'v11.0',
+      });
+
+      FB.AppEvents.logPageView();
+    };
+    (function (d, s, id) {
+      var js,
+        fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) {
+        return;
+      }
+      js = d.createElement(s);
+      js.id = id;
+      js.src = 'https://connect.facebook.net/en_US/sdk.js';
+      fjs.parentNode.insertBefore(js, fjs);
+    })(document, 'script', 'facebook-jssdk');
+  }
+
+  submitLogin() {
+    FB.login((response) => {
+      if (response.authResponse) {
+        this.accessToken = response.authResponse.accessToken;
+      } else {
+        this.accessToken = 'User Login Failed';
+      }
+    });
+  }
 }
